@@ -1,3 +1,50 @@
+// Register the Service Worker
+function registerServiceWorker() {
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/sw.js')
+                .then(registration => {
+                    console.log('ServiceWorker registration successful with scope:', registration.scope);
+                    
+                    // Optional: Add UI indicator
+                    showServiceWorkerStatus('Service Worker registered successfully!');
+                })
+                .catch(error => {
+                    console.error('ServiceWorker registration failed:', error);
+                    
+                    // Optional: Add UI indicator
+                    showServiceWorkerStatus('Service Worker registration failed!', true);
+                });
+        });
+    } else {
+        console.log('Service Workers not supported in this browser.');
+        showServiceWorkerStatus('Service Workers not supported in this browser.', true);
+    }
+}
+
+// Optional: Add a status display function
+function showServiceWorkerStatus(message, isError = false) {
+    // Create a status element if it doesn't exist
+    let statusElement = document.getElementById('sw-status');
+    if (!statusElement) {
+        statusElement = document.createElement('div');
+        statusElement.id = 'sw-status';
+        document.body.appendChild(statusElement);
+    }
+    
+    // Style based on status
+    statusElement.className = isError ? 'sw-status error' : 'sw-status success';
+    statusElement.textContent = message;
+    
+    // Auto-hide after 3 seconds
+    setTimeout(() => {
+        statusElement.style.opacity = '0';
+    }, 3000);
+}
+
+// Call the registration function
+registerServiceWorker();
+
 document.addEventListener('DOMContentLoaded', () => {
     // Get DOM elements
     const codeEditor = document.getElementById('codeEditor');
@@ -6,6 +53,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const newSnippetBtn = document.getElementById('newSnippetBtn');
     const snippetList = document.getElementById('snippetList');
 
+   
+   
     // Track current snippet
     let currentSnippetId = null;
 
