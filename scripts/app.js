@@ -45,6 +45,28 @@ function showServiceWorkerStatus(message, isError = false) {
 // Call the registration function
 registerServiceWorker();
 
+// Add simple connection status indicator
+function updateConnectionStatus() {
+    const statusElement = document.getElementById('connection-status');
+    if (!statusElement) return;
+
+    if (navigator.onLine) {
+        statusElement.innerHTML = "🟢 Online";
+        statusElement.style.backgroundColor = "#f1fff0";
+    } else {
+        statusElement.innerHTML = "🔴 Offline";
+        statusElement.style.backgroundColor = "#fff0f0";
+    }
+}
+
+// Update status when online/offline events occur
+window.addEventListener('online', updateConnectionStatus);
+window.addEventListener('offline', updateConnectionStatus);
+
+// Initial check
+document.addEventListener('DOMContentLoaded', updateConnectionStatus);
+
+
 document.addEventListener('DOMContentLoaded', () => {
     // Get DOM elements
     const codeEditor = document.getElementById('codeEditor');
