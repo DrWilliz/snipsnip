@@ -45,6 +45,28 @@ function showServiceWorkerStatus(message, isError = false) {
 // Call the registration function
 registerServiceWorker();
 
+// Add simple connection status indicator
+function updateConnectionStatus() {
+    const statusElement = document.getElementById('connection-status');
+    if (!statusElement) return;
+
+    if (navigator.onLine) {
+        statusElement.innerHTML = "🟢 Online";
+        statusElement.style.backgroundColor = "#f1fff0";
+    } else {
+        statusElement.innerHTML = "🔴 Offline";
+        statusElement.style.backgroundColor = "#fff0f0";
+    }
+}
+
+// Update status when online/offline events occur
+window.addEventListener('online', updateConnectionStatus);
+window.addEventListener('offline', updateConnectionStatus);
+
+// Initial check
+document.addEventListener('DOMContentLoaded', updateConnectionStatus);
+
+
 document.addEventListener('DOMContentLoaded', () => {
     // Get DOM elements
     const codeEditor = document.getElementById('codeEditor');
@@ -231,3 +253,35 @@ categorySelect.innerHTML = categories.map(cat =>
     `<option value="${cat}">${cat}</option>`
 ).join('');
 
+// Example of how to create a no-cache request in your app
+function fetchFreshData() {
+    fetch('/api/data', {
+      headers: {
+        'Cache-Control': 'no-cache'
+      }
+    })
+    .then(response => response.json())
+    .then(data => {
+      // Process fresh data
+    });
+  }
+
+  // Add this to your app.js to allow manual cache updates if needed
+function updateCaches() {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistration()
+        .then(registration => {
+          if (registration) {
+            // Force the service worker to update
+            registration.update();
+          }
+        });
+    }
+  }
+  
+  // Add a refresh button to your app UI if you want
+  const refreshButton = document.getElementById('refresh-app');
+  if (refreshButton) {
+    refreshButton.addEventListener('click', updateCaches);
+  }
+  
